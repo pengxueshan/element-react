@@ -13,13 +13,17 @@ export default class Tag extends Component {
   }
 
   handleClose() {
-    this.setState({
-      visible: false
-    }, () => {
-      if (this.props.onClose) {
-        this.props.onClose();
+    if (this.props.onClose) {
+      if (this.props.onClose()) {
+        this.setState({
+          visible: false
+        });
       }
-    });
+    } else {
+      this.setState({
+        visible: false
+      });
+    }
   }
 
   render() {

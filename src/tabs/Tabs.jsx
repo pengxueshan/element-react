@@ -95,23 +95,42 @@ export default class Tabs extends Component {
 
     e.stopPropagation();
 
-    if (children[index].props.name === currentName) {
-      const nextChild = children[index + 1];
-      const prevChild = children[index - 1];
-
+    if (onTabRemove || onTabEdit) {
+      if (onTabRemove(tab, e) || onTabEdit('remove', tab)) {
+        if (children[index].props.name === currentName) {
+          const nextChild = children[index + 1];
+          const prevChild = children[index - 1];
+    
+          this.setState({
+            currentName: nextChild ? nextChild.props.name : prevChild ? prevChild.props.name : '-1',
+          });
+        }
+    
+        children.splice(index, 1);
+    
+        this.setState({
+          children
+        });
+      }
+    } else {
+      if (children[index].props.name === currentName) {
+        const nextChild = children[index + 1];
+        const prevChild = children[index - 1];
+  
+        this.setState({
+          currentName: nextChild ? nextChild.props.name : prevChild ? prevChild.props.name : '-1',
+        });
+      }
+  
+      children.splice(index, 1);
+  
       this.setState({
-        currentName: nextChild ? nextChild.props.name : prevChild ? prevChild.props.name : '-1',
+        children
+      }, () => {
+        onTabEdit && onTabEdit('remove', tab);
+        onTabRemove && onTabRemove(tab, e);
       });
     }
-
-    children.splice(index, 1);
-
-    this.setState({
-      children
-    }, () => {
-      onTabEdit && onTabEdit('remove', tab);
-      onTabRemove && onTabRemove(tab, e);
-    });
   }
 
   handleTabClick(tab: React.Element<any>, e: SyntheticEvent): void | boolean {
